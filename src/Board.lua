@@ -1,8 +1,9 @@
 Board = Class{}
 
-function Board:init(x, y)
+function Board:init(x, y, level)
     self.x = x
     self.y = y
+    self.level = level
     self.matches = {}
 
     self:initializeTiles()
@@ -13,7 +14,7 @@ function Board:initializeTiles()
     for tileY = 1, 8 do
         table.insert(self.tiles, {})
         for tileX = 1, 8 do
-            table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(6)))
+            table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(self.level)))
         end
     end
 

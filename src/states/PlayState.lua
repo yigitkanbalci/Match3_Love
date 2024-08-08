@@ -12,7 +12,7 @@ function PlayState:init()
     self.highlightedTile = nil
 
     self.score = 0
-    self.timer = 10
+    self.timer = 60
 
     Timer.every(0.5, function()
         self.rectHighlighted = not self.rectHighlighted
@@ -29,7 +29,7 @@ end
 
 function PlayState:enter(params)
     self.level = params.level
-    self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16)
+    self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16, self.level)
     self.score = params.score or 0
 
     self.scoreGoal = self.level * 1.25 * 200
@@ -56,6 +56,7 @@ function PlayState:update(dt)
         gSounds['next-level']:play()
 
         gStateMachine:change('begin-game', {
+            timer = self.timer + 15,
             level = self.level + 1,
             score = self.score
         })
@@ -144,6 +145,7 @@ function PlayState:calculateMatches()
 
         -- add score for each match
         for k, match in pairs(matches) do
+            self.timer = self.timer + 3 -- adding 3 seconds per matched tile
             self.score = self.score + #match * 50
         end
 
