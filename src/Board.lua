@@ -164,6 +164,47 @@ function Board:removeMatches()
     self.matches = nil
 end
 
+function Board:canSwapAndMatch(tile1, tile2)
+    self:swapTiles(tile1, tile2)
+
+    local match = self:calculateMatches()
+
+    self:swapTiles(tile1, tile2)
+
+    return match ~= false
+end
+
+function Board:swapTiles(tile1, tile2)
+    local tempX = tile1.gridX
+    local tempY = tile1.gridY
+    tile1.gridX = tile2.gridX
+    tile1.gridY = tile2.gridY
+    tile2.gridX = tempX
+    tile2.gridY = tempY
+
+    -- swap tiles in the tiles table
+    self.tiles[tile1.gridY][tile1.gridX] = tile1
+    self.tiles[tile2.gridY][tile2.gridX] = tile2
+end
+
+function Board:hasPossibleMatches()
+    for y = 1, 8 do
+        for x = 1, 8 do
+            local tile = self.tiles[y][x]
+
+            if x < 8 and self:canSwapAndMatch(tile, self.tiles[y][x + 1]) then
+                return true
+            end
+
+            if y < 8 and self:canSwapAndMatch(tile, self.tiles[y + 1][x]) then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
 function Board:getFallingTiles()
     -- tween table, with tiles as keys and their x and y as the to values
     local tweens = {}

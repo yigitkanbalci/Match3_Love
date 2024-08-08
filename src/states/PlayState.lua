@@ -104,30 +104,24 @@ function PlayState:update(dt)
 
                 local newTile = self.board.tiles[y][x]
 
-                self.highlightedTile.gridX = newTile.gridX
-                self.highlightedTile.gridY = newTile.gridY
-                newTile.gridX = tempX
-                newTile.gridY = tempY
+                if self.board:canSwapAndMatch(self.highlightedTile, newTile) then
+                    self.canInput = false
 
-                -- swap tiles in the tiles table
-                self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-                    self.highlightedTile
+                    -- swap grid positions and tiles
+                    self.board:swapTiles(self.highlightedTile, newTile)
 
-                self.board.tiles[newTile.gridY][newTile.gridX] = newTile
-
-                -- tween coordinates between the two so they swap
-                Timer.tween(0.1, {
-                    [self.highlightedTile] = {x = newTile.x, y = newTile.y},
-                    [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
-                })
-                
-                -- once the swap is finished, we can tween falling blocks as needed
-                :finish(function()
-                    self:calculateMatches()
-                end)
+                    Timer.tween(0.1, {
+                        [self.highlightedTile] = { x = newTile.x, y = newTile.y },
+                        [newTile] = { x = self.highlightedTile.x, y = self.highlightedTile.y }
+                    }):finish(function()
+                        self:calculateMatches()
+                    end)
+                else
+                    gSounds['error']:play()
+                end
+                self.highlightedTile = nil
             end
         end
-
     end
 
     Timer.update(dt)
@@ -166,6 +160,9 @@ function PlayState:calculateMatches()
     
     -- if no matches, we can continue playing
     else
+        if not self.board:hasPossibleMatches() then
+            self.board:initializeTiles()
+        end
         self.canInput = true
     end
 end
