@@ -50,12 +50,17 @@ function Board:calculateMatches()
                 -- if we have a match of 3 or more up to now, add it to our matches table
                 if matchNum >= 3 then
                     local match = {}
-
-                    -- go backwards from here by matchNum
-                    for x2 = x - 1, x - matchNum, -1 do
+                    
+                    if matchNum > 3 then
+                        for x2 = 1, 8 do -- match entire row
+                            table.insert(match, self.tiles[y][x2])
+                        end
+                    else
+                        for x2 = x - 1, x - matchNum, -1 do -- go backwards by matchnum
                         
-                        -- add each tile to the match that's in that match
-                        table.insert(match, self.tiles[y][x2])
+                            -- add each tile to the match that's in that match
+                            table.insert(match, self.tiles[y][x2])
+                        end
                     end
 
                     -- add this match to our total matches table
@@ -75,6 +80,9 @@ function Board:calculateMatches()
         if matchNum >= 3 then
             local match = {}
             
+            if matchNum > 3 then
+                matchNum = 8
+            end
             -- go backwards from end of last row by matchNum
             for x = 8, 8 - matchNum + 1, -1 do
                 table.insert(match, self.tiles[y][x])
@@ -100,8 +108,14 @@ function Board:calculateMatches()
                 if matchNum >= 3 then
                     local match = {}
 
-                    for y2 = y - 1, y - matchNum, -1 do
-                        table.insert(match, self.tiles[y2][x])
+                    if matchNum > 3 then
+                        for y2 = 1, 8 do
+                            table.insert(match, self.tiles[y2][x])
+                        end
+                    else
+                        for y2 = y - 1, y - matchNum, -1 do
+                            table.insert(match, self.tiles[y2][x])
+                        end
                     end
 
                     table.insert(matches, match)
@@ -120,6 +134,9 @@ function Board:calculateMatches()
         if matchNum >= 3 then
             local match = {}
             
+            if matchNum > 3 then
+                matchNum = 8
+            end
             -- go backwards from end of last row by matchNum
             for y = 8, 8 - matchNum + 1, -1 do
                 table.insert(match, self.tiles[y][x])
